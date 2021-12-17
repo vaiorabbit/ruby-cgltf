@@ -12,21 +12,21 @@ if __FILE__ == $PROGRAM_NAME
 
   result = cgltf_parse_file(options, model_path, data)
   if result != Cgltf_result_success
-    puts "[ERROR] Could not load: #{model_path}"
+    puts "[ERROR] Could not parse: #{model_path}"
     return
   end
 
   result = cgltf_load_buffers(options, data.read_pointer, model_path)
   if result != Cgltf_result_success
     puts "[ERROR] Could not load: #{model_path}"
-    cgltf_free(data)
+    cgltf_free(data.read_pointer)
     return
   end
 
   result = cgltf_validate(data.read_pointer)
   if result != Cgltf_result_success
     puts "[ERROR] Invalid model given: #{model_path}"
-    cgltf_free(data)
+    cgltf_free(data.read_pointer)
     return
   end
 

@@ -1,0 +1,3 @@
+[submodule "cgltf_dll/cgltf"]
+	path = cgltf_dll/cgltf
+	url = https://github.com/jkuhlmann/cgltf.git

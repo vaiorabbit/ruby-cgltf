@@ -16,6 +16,7 @@ module Cgltf
   Cgltf_file_type_invalid = 0
   Cgltf_file_type_gltf = 1
   Cgltf_file_type_glb = 2
+  Cgltf_file_type_max_enum = 3
   Cgltf_result_success = 0
   Cgltf_result_data_too_short = 1
   Cgltf_result_unknown_format = 2
@@ -26,9 +27,11 @@ module Cgltf
   Cgltf_result_io_error = 7
   Cgltf_result_out_of_memory = 8
   Cgltf_result_legacy_gltf = 9
+  Cgltf_result_max_enum = 10
   Cgltf_buffer_view_type_invalid = 0
   Cgltf_buffer_view_type_indices = 1
   Cgltf_buffer_view_type_vertices = 2
+  Cgltf_buffer_view_type_max_enum = 3
   Cgltf_attribute_type_invalid = 0
   Cgltf_attribute_type_position = 1
   Cgltf_attribute_type_normal = 2
@@ -37,6 +40,8 @@ module Cgltf
   Cgltf_attribute_type_color = 5
   Cgltf_attribute_type_joints = 6
   Cgltf_attribute_type_weights = 7
+  Cgltf_attribute_type_custom = 8
+  Cgltf_attribute_type_max_enum = 9
   Cgltf_component_type_invalid = 0
   Cgltf_component_type_r_8 = 1
   Cgltf_component_type_r_8u = 2
@@ -44,6 +49,7 @@ module Cgltf
   Cgltf_component_type_r_16u = 4
   Cgltf_component_type_r_32u = 5
   Cgltf_component_type_r_32f = 6
+  Cgltf_component_type_max_enum = 7
   Cgltf_type_invalid = 0
   Cgltf_type_scalar = 1
   Cgltf_type_vec2 = 2
@@ -52,6 +58,7 @@ module Cgltf
   Cgltf_type_mat2 = 5
   Cgltf_type_mat3 = 6
   Cgltf_type_mat4 = 7
+  Cgltf_type_max_enum = 8
   Cgltf_primitive_type_points = 0
   Cgltf_primitive_type_lines = 1
   Cgltf_primitive_type_line_loop = 2
@@ -59,39 +66,49 @@ module Cgltf
   Cgltf_primitive_type_triangles = 4
   Cgltf_primitive_type_triangle_strip = 5
   Cgltf_primitive_type_triangle_fan = 6
+  Cgltf_primitive_type_max_enum = 7
   Cgltf_alpha_mode_opaque = 0
   Cgltf_alpha_mode_mask = 1
   Cgltf_alpha_mode_blend = 2
+  Cgltf_alpha_mode_max_enum = 3
   Cgltf_animation_path_type_invalid = 0
   Cgltf_animation_path_type_translation = 1
   Cgltf_animation_path_type_rotation = 2
   Cgltf_animation_path_type_scale = 3
   Cgltf_animation_path_type_weights = 4
+  Cgltf_animation_path_type_max_enum = 5
   Cgltf_interpolation_type_linear = 0
   Cgltf_interpolation_type_step = 1
   Cgltf_interpolation_type_cubic_spline = 2
+  Cgltf_interpolation_type_max_enum = 3
   Cgltf_camera_type_invalid = 0
   Cgltf_camera_type_perspective = 1
   Cgltf_camera_type_orthographic = 2
+  Cgltf_camera_type_max_enum = 3
   Cgltf_light_type_invalid = 0
   Cgltf_light_type_directional = 1
   Cgltf_light_type_point = 2
   Cgltf_light_type_spot = 3
+  Cgltf_light_type_max_enum = 4
   Cgltf_data_free_method_none = 0
   Cgltf_data_free_method_file_release = 1
   Cgltf_data_free_method_memory_free = 2
+  Cgltf_data_free_method_max_enum = 3
   Cgltf_meshopt_compression_mode_invalid = 0
   Cgltf_meshopt_compression_mode_attributes = 1
   Cgltf_meshopt_compression_mode_triangles = 2
   Cgltf_meshopt_compression_mode_indices = 3
+  Cgltf_meshopt_compression_mode_max_enum = 4
   Cgltf_meshopt_compression_filter_none = 0
   Cgltf_meshopt_compression_filter_octahedral = 1
   Cgltf_meshopt_compression_filter_quaternion = 2
   Cgltf_meshopt_compression_filter_exponential = 3
+  Cgltf_meshopt_compression_filter_max_enum = 4
 
   # Typedef
 
-  typedef :int, :cgltf_size
+  typedef :ulong, :cgltf_size
+  typedef :long_long, :cgltf_ssize
   typedef :float, :cgltf_float
   typedef :int, :cgltf_int
   typedef :uint, :cgltf_uint
@@ -116,8 +133,8 @@ module Cgltf
 
   class Cgltf_memory_options < FFI::Struct
     layout(
-      :alloc, :pointer,
-      :free, :pointer,
+      :alloc_func, :pointer,
+      :free_func, :pointer,
       :user_data, :pointer,
     )
   end
@@ -314,7 +331,6 @@ module Cgltf
       :base_color_factor, [:float, 4],
       :metallic_factor, :float,
       :roughness_factor, :float,
-      :extras, Cgltf_extras.by_value,
     )
   end
 
@@ -384,6 +400,17 @@ module Cgltf
     )
   end
 
+  class Cgltf_iridescence < FFI::Struct
+    layout(
+      :iridescence_factor, :float,
+      :iridescence_texture, Cgltf_texture_view.by_value,
+      :iridescence_ior, :float,
+      :iridescence_thickness_min, :float,
+      :iridescence_thickness_max, :float,
+      :iridescence_thickness_texture, Cgltf_texture_view.by_value,
+    )
+  end
+
   class Cgltf_material < FFI::Struct
     layout(
       :name, :pointer,
@@ -396,6 +423,7 @@ module Cgltf
       :has_specular, :int,
       :has_sheen, :int,
       :has_emissive_strength, :int,
+      :has_iridescence, :int,
       :pbr_metallic_roughness, Cgltf_pbr_metallic_roughness.by_value,
       :pbr_specular_glossiness, Cgltf_pbr_specular_glossiness.by_value,
       :clearcoat, Cgltf_clearcoat.by_value,
@@ -405,6 +433,7 @@ module Cgltf
       :transmission, Cgltf_transmission.by_value,
       :volume, Cgltf_volume.by_value,
       :emissive_strength, Cgltf_emissive_strength.by_value,
+      :iridescence, Cgltf_iridescence.by_value,
       :normal_texture, Cgltf_texture_view.by_value,
       :occlusion_texture, Cgltf_texture_view.by_value,
       :emissive_texture, Cgltf_texture_view.by_value,
@@ -435,6 +464,14 @@ module Cgltf
   end
 
   class Cgltf_draco_mesh_compression < FFI::Struct
+    layout(
+      :buffer_view, :pointer,
+      :attributes, :pointer,
+      :attributes_count, :ulong,
+    )
+  end
+
+  class Cgltf_mesh_gpu_instancing < FFI::Struct
     layout(
       :buffer_view, :pointer,
       :attributes, :pointer,
@@ -497,6 +534,8 @@ module Cgltf
       :scale, [:float, 3],
       :matrix, [:float, 16],
       :extras, Cgltf_extras.by_value,
+      :has_mesh_gpu_instancing, :int,
+      :mesh_gpu_instancing, Cgltf_mesh_gpu_instancing.by_value,
       :extensions_count, :ulong,
       :extensions, :pointer,
     )
@@ -709,21 +748,21 @@ module Cgltf
       :cgltf_copy_extras_json,
     ]
     args = {
-      :cgltf_parse => [:pointer, :pointer, :int, :pointer],
+      :cgltf_parse => [:pointer, :pointer, :ulong, :pointer],
       :cgltf_parse_file => [:pointer, :pointer, :pointer],
       :cgltf_load_buffers => [:pointer, :pointer, :pointer],
-      :cgltf_load_buffer_base64 => [:pointer, :int, :pointer, :pointer],
+      :cgltf_load_buffer_base64 => [:pointer, :ulong, :pointer, :pointer],
       :cgltf_decode_string => [:pointer],
       :cgltf_decode_uri => [:pointer],
       :cgltf_validate => [:pointer],
       :cgltf_free => [:pointer],
       :cgltf_node_transform_local => [:pointer, :pointer],
       :cgltf_node_transform_world => [:pointer, :pointer],
-      :cgltf_accessor_read_float => [:pointer, :int, :pointer, :int],
-      :cgltf_accessor_read_uint => [:pointer, :int, :pointer, :int],
-      :cgltf_accessor_read_index => [:pointer, :int],
+      :cgltf_accessor_read_float => [:pointer, :ulong, :pointer, :ulong],
+      :cgltf_accessor_read_uint => [:pointer, :ulong, :pointer, :ulong],
+      :cgltf_accessor_read_index => [:pointer, :ulong],
       :cgltf_num_components => [:int],
-      :cgltf_accessor_unpack_floats => [:pointer, :pointer, :int],
+      :cgltf_accessor_unpack_floats => [:pointer, :pointer, :ulong],
       :cgltf_copy_extras_json => [:pointer, :pointer, :pointer, :pointer],
     }
     retvals = {

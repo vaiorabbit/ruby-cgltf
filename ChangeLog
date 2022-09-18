@@ -1,3 +1,7 @@
+2022-09-18  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* Updated to use current cgltf version ( https://github.com/jkuhlmann/cgltf/tree/40ad011bd7f149bd245f4ea7ba57dc0519227c7d )
+
 2021-12-17  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Project started.
